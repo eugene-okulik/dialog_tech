@@ -1,1 +1,1 @@
-# sto
+# dialog_tech
