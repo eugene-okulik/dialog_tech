@@ -15,7 +15,7 @@ print(f'Last tuple item: {last_tuple_element}')
 my_dict.get('list').append(6)
 del my_dict.get('list')[1]
 
-my_dict.get('dict')['I am a tuple'] = False
+my_dict.get('dict')[('I am a tuple',)] = False
 del my_dict.get('dict')['One']
 
 my_dict.get('set').add('New element')
