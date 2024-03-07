@@ -29,5 +29,3 @@ bouquet.sor_by_stem_length()
 print(bouquet)
 
 print(bouquet.find_flowers_by_price(3))
-
-
