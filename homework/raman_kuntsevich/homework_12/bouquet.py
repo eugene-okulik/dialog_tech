@@ -17,26 +17,11 @@ class Bouquet:
         average_life_time = round(sum_life_time / len(self.flowers))
         return f'Average bouquet life time is {average_life_time} days.'
 
-    def sort_by_color(self):
-        self.flowers.sort(key=lambda flower: flower.color)
+    def sort_by(self, key):
+        self.flowers.sort(key=lambda flower: getattr(flower, key))
 
-    def sort_by_price(self):
-        self.flowers.sort(key=lambda flower: flower.price)
-
-    def sor_by_stem_length(self):
-        self.flowers.sort(key=lambda flower: flower.stem_length)
-
-    def find_flowers_by_price(self, value):
-        return [flower for flower in self.flowers if flower.price == value]
-
-    def find_flowers_by_life_time(self, value):
-        return [flower for flower in self.flowers if flower.life_time == value]
-
-    def find_flowers_by_stem_length(self, value):
-        return [flower for flower in self.flowers if flower.stem_length == value]
-
-    def find_flowers_by_color(self, value):
-        return [flower for flower in self.flowers if flower.color == value]
+    def find_flowers(self, key, value):
+        return [flower for flower in self.flowers if getattr(flower, key) == value]
 
     def __str__(self):
         return '\n'.join(str(flower) for flower in self.flowers)
