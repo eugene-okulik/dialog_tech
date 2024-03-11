@@ -122,7 +122,7 @@ class StudentManager(DatabaseManager):
         """
 
         query = '''
-        select 
+        select
         s.name as Name,
         s.second_name as SecondName,
         l.title as Lesson,
