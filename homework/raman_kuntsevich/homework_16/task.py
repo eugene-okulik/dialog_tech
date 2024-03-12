@@ -13,14 +13,14 @@ dotenv.load_dotenv()
 
 query = '''
 SELECT
-s.name, 
-s.second_name, 
+s.name,
+s.second_name,
 g.title as group_title,
 b.title as book_title,
 s2.title as subject_title,
 l.title  as lesson_title,
 m.value  as mark_value
-FROM 
+FROM
 students s
 JOIN `groups` g ON s.group_id = g.id
 JOIN books b ON b.taken_by_student_id = s.id
