@@ -2,6 +2,7 @@ from homework.raman_kuntsevich.homework_15.database_manager import DatabaseManag
 import dotenv
 import os
 
+
 class StudentManager(DatabaseManager):
 
     def __init__(self):
