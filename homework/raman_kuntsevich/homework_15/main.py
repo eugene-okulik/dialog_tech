@@ -1,12 +1,6 @@
 from homework.raman_kuntsevich.homework_15.student_manager import StudentManager
 
-db_students = StudentManager(
-    host='db-mysql-fra1-09136-do-user-7651996-0.b.db.ondigitalocean.com',
-    port=25060,
-    user='st-onl',
-    password='AVNS_tegPDkI5BlB2lW5eASC',
-    database='st-onl'
-)
+db_students = StudentManager()
 
 student_id = db_students.add_students(('Raman', 'Kuntsevich'))[0]
 books_ids = db_students.add_books(
@@ -54,3 +48,5 @@ def print_select_data(data, keys):
 print_select_data(student_marks, ['Name', 'SecondName', 'Lesson', 'Mark'])
 print_select_data(student_books, ['title'])
 print_select_data(student_data, ['Name', 'SecondName', 'Group', 'Lesson', 'Mark', 'Book'])
+
+db_students.close_connection()
