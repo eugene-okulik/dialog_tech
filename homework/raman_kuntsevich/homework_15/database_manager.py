@@ -51,7 +51,7 @@ class DatabaseManager:
                 cursor.execute(query, data)
             else:
                 cursor.execute(query)
-            self.logger.info(f"Select successful. Query: {query}, Data: {data}")
+            # self.logger.info(f"Select successful. Query: {query}, Data: {data}")
             result = cursor.fetchall()
             return result
         except Exception as e:

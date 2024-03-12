@@ -1,10 +1,18 @@
 from homework.raman_kuntsevich.homework_15.database_manager import DatabaseManager
+import dotenv
+import os
 
 
 class StudentManager(DatabaseManager):
 
-    def __init__(self, host, port, user, password, database):
-        super().__init__(host, port, user, password, database)
+    def __init__(self):
+        dotenv.load_dotenv()
+        self.host = os.getenv('DB_HOST')
+        self.port = os.getenv('DB_PORT')
+        self.user = os.getenv('DB_USER')
+        self.password = os.getenv('DB_PASSW')
+        self.database = os.getenv('DB_NAME')
+        super().__init__(self.host, self.port, self.user, self.password, self.database)
 
     def add_students(self, *args):
         """
@@ -18,7 +26,7 @@ class StudentManager(DatabaseManager):
         insert into students (name, second_name)
         values (%s, %s)
         '''
-        params = [*args]
+        params = list(args)
         return self.execute_insert_query(query, params)
 
     def add_books(self, *args):
@@ -33,7 +41,7 @@ class StudentManager(DatabaseManager):
         insert into books (title, taken_by_student_id)
         values (%s, %s)
         '''
-        params = [*args]
+        params = list(args)
         return self.execute_insert_query(query, params)
 
     def add_groups(self, *args):
@@ -48,7 +56,7 @@ class StudentManager(DatabaseManager):
         INSERT into `groups` (title, start_date, end_date)
         values (%s, %s, %s)
         '''
-        params = [*args]
+        params = list(args)
         return self.execute_insert_query(query, params)
 
     def update_student_group(self, student_id, group_id):
@@ -95,7 +103,7 @@ class StudentManager(DatabaseManager):
         insert into lessons (title, subject_id)
         values (%s, %s)
         '''
-        params = [*args]
+        params = list(args)
         return self.execute_insert_query(query, params)
 
     def add_marks(self, *args):
@@ -110,7 +118,7 @@ class StudentManager(DatabaseManager):
         insert into marks (value, lesson_id, student_id)
         values (%s, %s, %s)
         '''
-        params = [*args]
+        params = list(args)
         return self.execute_insert_query(query, params)
 
     def get_student_marks(self, student_id):
