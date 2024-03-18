@@ -9,16 +9,12 @@ class LogAnalyzer:
     def __init__(self, params):
         self.params = params
         self.path = self.params['path']
-    #    self.date = self.params['date']
-    #    self.text = self.params['text']
-    #    self.unwanted = self.params['unwanted']
-    #    self.full = self.params['full']
         self.files = self.get_file_names()
         self.check_file_exists()
         self.file_contents = self.read_files()
         self.parsed_logs = self.parse_logs()
-        print(params)
-        print(self.parsed_logs.items())
+        self.result_logs = self.processing_search_params()
+        self.print_result()
 
     def get_file_names(self):
         if os.path.isfile(self.path):
@@ -65,7 +61,47 @@ class LogAnalyzer:
 
         return parsed_logs
 
-    # def search_by_date(self):
+    def processing_search_params(self):
+        result_logs = self.parsed_logs
+        for key, param in self.params.items():
+            match key:
+                case 'date':
+                    result_logs = self.search_by_date(param, result_logs)
+                case 'text':
+                    result_logs = self.search_by_text(param, result_logs)
+                case 'unwanted':
+                    result_logs = self.exclude_unwanted(param, result_logs)
+        return result_logs
+
+    @staticmethod
+    def search_by_date(param, result_logs):
+        for key, date in param.items():
+            match key:
+                case 'exact':
+                    return dict(filter(lambda item: item[0] == date, result_logs.items()))
+                case 'less':
+                    return dict(filter(lambda item: item[0] < date, result_logs.items()))
+                case 'more':
+                    return dict(filter(lambda item: item[0] > date, result_logs.items()))
+                case 'start':
+                    return dict(filter(lambda item: param['start'] < item[0] < param['end'], result_logs.items()))
+
+    @staticmethod
+    def search_by_text(text, result_logs):
+        return dict(filter(lambda item: text in item[1], result_logs.items()))
+
+    @staticmethod
+    def exclude_unwanted(unwanted_text, result_logs):
+        return dict(filter(lambda item: unwanted_text not in item[1], result_logs.items()))
+
+    def print_result(self):
+        if self.params.get('full'):
+            for key, value in self.result_logs.items():
+                print(value)
+        else:
+            for key, value in self.result_logs.items():
+                print(value[:30])
+
 
 if __name__ == "__main__":
     parser = ArgParser()

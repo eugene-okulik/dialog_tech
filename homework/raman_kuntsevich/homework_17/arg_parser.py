@@ -38,7 +38,6 @@ class ArgParser:
                     case 'path':
                         param, error_str = (self.process_file_argument(arg_value))
                     case 'date':
-                        print(arg_value)
                         try:
                             param, error_str = (self.process_date_argument(arg_value))
                         except ValueError:
