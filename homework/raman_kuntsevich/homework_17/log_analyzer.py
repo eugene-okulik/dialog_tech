@@ -1,3 +1,4 @@
+import dependency_manager
 import os
 import sys
 from datetime import datetime
@@ -111,16 +112,18 @@ class LogAnalyzer:
                 print(str_date, value)
             elif self.params.get('text'):
                 text = self.params['text']
-                start_index = value.find(text)
-                end_index = start_index + len(text)
+                start_text_index = value.find(text)
+                end_text_index = start_text_index + len(text)
+                start_index = max(start_text_index - self.line_limit_by_text, 0)
+                end_index = min(end_text_index + self.line_limit_by_text, len(value))
                 print(str_date,
-                      value[start_index - self.line_limit_by_text:start_index],
-                      Fore.GREEN + value[start_index:end_index] + Style.RESET_ALL,
-                      value[end_index:end_index + self.line_limit_by_text])
+                      value[start_index:start_text_index],
+                      Fore.GREEN + value[start_text_index:end_text_index] + Style.RESET_ALL,
+                      value[end_text_index:end_index])
             else:
                 print(str_date, value[:self.line_limit])
         print(Fore.YELLOW + 'Total logs count:', Fore.BLUE + str(self.parsed_logs_count))
-        print(Fore.YELLOW + 'Total results count:', Fore.BLUE + str(self.result_logs_count))
+        print(Fore.YELLOW + 'Total results count:', Fore.BLUE + str(self.result_logs_count) + Style.RESET_ALL)
 
 
 if __name__ == "__main__":
