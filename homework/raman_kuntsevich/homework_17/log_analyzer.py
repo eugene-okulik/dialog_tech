@@ -3,17 +3,22 @@ import sys
 from datetime import datetime
 from arg_parser import ArgParser
 import re
+from colorama import init, Fore, Style
 
 
 class LogAnalyzer:
     def __init__(self, params):
+        self.line_limit = 300
+        self.line_limit_by_text = 150
         self.params = params
         self.path = self.params['path']
         self.files = self.get_file_names()
         self.check_file_exists()
         self.file_contents = self.read_files()
         self.parsed_logs = self.parse_logs()
+        self.parsed_logs_count = len(self.parsed_logs)
         self.result_logs = self.processing_search_params()
+        self.result_logs_count = len(self.result_logs)
         self.print_result()
 
     def get_file_names(self):
@@ -91,16 +96,31 @@ class LogAnalyzer:
         return dict(filter(lambda item: text in item[1], result_logs.items()))
 
     @staticmethod
-    def exclude_unwanted(unwanted_text, result_logs):
-        return dict(filter(lambda item: unwanted_text not in item[1], result_logs.items()))
+    def exclude_unwanted(unwanted_params, result_logs):
+        result = result_logs
+        for text in unwanted_params:
+            result = dict(filter(lambda item: text not in item[1], result.items()))
+        return result
 
     def print_result(self):
-        if self.params.get('full'):
-            for key, value in self.result_logs.items():
-                print(value)
-        else:
-            for key, value in self.result_logs.items():
-                print(value[:30])
+        date_format = "[%Y-%m-%d %H:%M:%S.%f]"
+        init()
+        for key, value in self.result_logs.items():
+            str_date = Fore.YELLOW + datetime.strftime(key, date_format) + Style.RESET_ALL
+            if self.params.get('full'):
+                print(str_date, value)
+            elif self.params.get('text'):
+                text = self.params['text']
+                start_index = value.find(text)
+                end_index = start_index + len(text)
+                print(str_date,
+                      value[start_index - self.line_limit_by_text:start_index],
+                      Fore.GREEN + value[start_index:end_index] + Style.RESET_ALL,
+                      value[end_index:end_index + self.line_limit_by_text])
+            else:
+                print(str_date, value[:self.line_limit])
+        print(Fore.YELLOW + 'Total logs count:', Fore.BLUE + str(self.parsed_logs_count))
+        print(Fore.YELLOW + 'Total results count:', Fore.BLUE + str(self.result_logs_count))
 
 
 if __name__ == "__main__":

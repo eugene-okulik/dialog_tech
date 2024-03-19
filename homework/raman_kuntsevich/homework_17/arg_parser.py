@@ -8,7 +8,7 @@ class ArgParser:
     def __init__(self):
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument("path",
-                                 help="File name")
+                                 help="File name or directory. Only files with the .log extension are processed.")
         self.parser.add_argument("-d", "--date",
                                  help="Datetime for search: less than: \"../2022-01-13 00:00:00.000\", "
                                       "more than: \"2022-01-13 00:00:00.000/..\", "
@@ -45,7 +45,7 @@ class ArgParser:
                     case 'text':
                         params['text'] = arg_value
                     case 'unwanted':
-                        params['unwanted'] = arg_value
+                        params['unwanted'] = arg_value.split(', ')
                     case 'full':
                         params['full'] = arg_value
 
