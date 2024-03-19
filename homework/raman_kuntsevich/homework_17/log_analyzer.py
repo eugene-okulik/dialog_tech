@@ -33,7 +33,7 @@ class LogAnalyzer:
         if self.files:
             pass
         else:
-            print(f"Error: File must have a .log extension")
+            print("Error: File must have a .log extension")
             sys.exit(1)
 
     def read_files(self):
