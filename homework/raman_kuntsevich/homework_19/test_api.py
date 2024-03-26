@@ -29,11 +29,6 @@ def get_random_body():
     }
 
 
-def get_all_post_ids():
-    response = requests.get('https://api.restful-api.dev/objects')
-    return list(map(lambda obj: obj['id'], response.json()))
-
-
 @pytest.fixture()
 def new_object_ids(request):
     headers = {'Content-Type': 'application/json'}
@@ -55,7 +50,6 @@ def new_object_ids(request):
 
 
 def test_get_all_objects():
-    get_all_post_ids()
     response = requests.get('https://api.restful-api.dev/objects')
     assert response.status_code == 200, 'Status code is incorrect'
     assert len(response.json()) == 13, 'Not all objects returned'
