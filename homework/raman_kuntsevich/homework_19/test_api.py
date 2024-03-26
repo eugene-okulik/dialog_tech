@@ -17,7 +17,6 @@ def print_before_and_after_tests():
     print('after test')
 
 
-@pytest.fixture()
 def get_random_body():
     return {
         "name": Faker().name(),
@@ -30,27 +29,41 @@ def get_random_body():
     }
 
 
+def get_all_post_ids():
+    response = requests.get('https://api.restful-api.dev/objects')
+    return list(map(lambda obj: obj['id'], response.json()))
+
+
 @pytest.fixture()
-def new_object_id(get_random_body):
-    body = get_random_body
+def new_object_ids(request):
     headers = {'Content-Type': 'application/json'}
-    response = requests.post(
-        'https://api.restful-api.dev/objects',
-        headers=headers,
-        json=body)
-    obj_id = response.json()['id']
-    yield obj_id
-    requests.delete(f'https://api.restful-api.dev/objects/{obj_id}')
+    num_objects = request.param
+    object_ids = []
+
+    for _ in range(num_objects):
+        response = requests.post(
+            'https://api.restful-api.dev/objects',
+            headers=headers,
+            json=get_random_body())
+        obj_id = response.json()['id']
+        object_ids.append(obj_id)
+
+    yield object_ids
+
+    for obj_id in object_ids:
+        requests.delete(f'https://api.restful-api.dev/objects/{obj_id}')
 
 
 def test_get_all_objects():
+    get_all_post_ids()
     response = requests.get('https://api.restful-api.dev/objects')
     assert response.status_code == 200, 'Status code is incorrect'
     assert len(response.json()) == 13, 'Not all objects returned'
 
 
-def test_get_objects_by_ids():
-    params = {'id': ['1', '3', '5', '13']}
+@pytest.mark.parametrize('new_object_ids', [1, 3, 5], indirect=True)
+def test_get_objects_by_ids(new_object_ids):
+    params = {'id': new_object_ids}
     response = requests.get(
         'https://api.restful-api.dev/objects',
         params=params
@@ -60,17 +73,17 @@ def test_get_objects_by_ids():
     assert all(obj_id in response_ids for obj_id in params['id']), 'Not all requested objects returned'
 
 
-def test_get_object():
-    obj_id = '13'
+@pytest.mark.parametrize('new_object_ids', [1], indirect=True)
+def test_get_object(new_object_ids):
+    obj_id = new_object_ids[0]
     response = requests.get(f'https://api.restful-api.dev/objects/{obj_id}')
     assert response.status_code == 200, 'Status code is incorrect'
     assert response.json()['id'] == obj_id, 'IDs do not match'
 
 
 @pytest.mark.critical
-@pytest.mark.parametrize('random_body', [None] * 3)
-def test_add_object(random_body, get_random_body):
-    body = get_random_body
+@pytest.mark.parametrize('body', [get_random_body() for _ in range(3)])
+def test_add_object(body):
     headers = {'Content-Type': 'application/json'}
     response = requests.post(
         'https://api.restful-api.dev/objects',
@@ -83,7 +96,9 @@ def test_add_object(random_body, get_random_body):
     assert response_body['data'] == body['data'], 'Object data does not match'
 
 
-def test_update_object(new_object_id):
+@pytest.mark.parametrize('new_object_ids', [1], indirect=True)
+def test_update_object(new_object_ids):
+    obj_id = new_object_ids[0]
     body = {
         "name": "Apple MacBook Pro 16 UPD",
         "data": {
@@ -95,27 +110,29 @@ def test_update_object(new_object_id):
     }
     headers = {'Content-Type': 'application/json'}
     response = requests.put(
-        f'https://api.restful-api.dev/objects/{new_object_id}',
+        f'https://api.restful-api.dev/objects/{obj_id}',
         headers=headers,
         json=body)
     response_body = response.json()
-    assert response_body['id'] == new_object_id, 'IDs do not match'
+    assert response_body['id'] == obj_id, 'IDs do not match'
     assert response_body['name'] == body['name'], 'Object name does not match'
     assert response_body['data'] == body['data'], 'Object data does not match'
 
 
+@pytest.mark.parametrize('new_object_ids', [1], indirect=True)
 @pytest.mark.medium
-def test_partially_update_object(new_object_id):
+def test_partially_update_object(new_object_ids):
+    obj_id = new_object_ids[0]
     body = {
         "name": "Apple MacBook Pro 16 PATCHED",
     }
     headers = {'Content-Type': 'application/json'}
     response = requests.patch(
-        f'https://api.restful-api.dev/objects/{new_object_id}',
+        f'https://api.restful-api.dev/objects/{obj_id}',
         headers=headers,
         json=body)
     response_body = response.json()
-    assert response_body['id'] == new_object_id, 'IDs do not match'
+    assert response_body['id'] == obj_id, 'IDs do not match'
     assert response_body['name'] == body['name'], 'Object name does not match'
 
 
