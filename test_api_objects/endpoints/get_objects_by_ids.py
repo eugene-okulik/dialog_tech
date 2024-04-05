@@ -21,4 +21,3 @@ class GetObjectsByIDs(BaseEndpoint):
     def check_objects_ids(self, object_ids):
         response_ids = [obj['id'] for obj in self.json]
         assert all(obj_id in response_ids for obj_id in object_ids), 'Not all requested objects returned'
-
