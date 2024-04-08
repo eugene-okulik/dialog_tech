@@ -7,10 +7,14 @@ class RestfulApiTest(HttpUser):
     wait_time = between(0.5, 3)
     new_objects_ids = []
 
+    def on_stop(self):
+        for obj_id in self.new_objects_ids:
+            self.client.delete(f'/objects/{obj_id}', name='clean object')
+
     @task(1)
     def create_object(self):
         object_body = random_body()
-        response = self.client.post('/objects', json=object_body)
+        response = self.client.post('/objects', json=object_body, name='create object')
         obj_id = response.json()['id']
         self.new_objects_ids.append(obj_id)
 
@@ -18,7 +22,7 @@ class RestfulApiTest(HttpUser):
     def read_object(self):
         if len(self.new_objects_ids) == 0:
             return
-        self.client.get('/objects')
+        self.client.get('/objects', name='all objects')
         obj_id = random.choice(self.new_objects_ids)
         self.client.get(f'/objects/{obj_id}', name='read object')
 
@@ -27,6 +31,6 @@ class RestfulApiTest(HttpUser):
         if len(self.new_objects_ids) == 0:
             return
         updated_body = random_body()
-        self.client.get('/objects')
+        self.client.get('/objects', name='all objects')
         obj_id = random.choice(self.new_objects_ids)
         self.client.put(f'/objects/{obj_id}', json=updated_body, name='update object')
