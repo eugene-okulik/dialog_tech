@@ -11,7 +11,6 @@ class RestfulApiTest(HttpUser):
     def create_object(self):
         object_body = random_body()
         response = self.client.post('/objects', json=object_body)
-        print(response)
         obj_id = response.json()['id']
         self.new_objects_ids.append(obj_id)
 
