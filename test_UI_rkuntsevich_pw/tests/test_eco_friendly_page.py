@@ -9,10 +9,10 @@ def test_products_have_names(eco_friendly_page):
 
 @pytest.mark.regression
 @pytest.mark.parametrize('sorting', [
-   ('grid', 'desc'),
-   ('grid', 'asc'),
-   ('list', 'desc'),
-   ('list', 'asc')
+    ('grid', 'desc'),
+    ('grid', 'asc'),
+    ('list', 'desc'),
+    ('list', 'asc')
 ])
 def test_sort_products_by_name(eco_friendly_page, sorting):
     eco_friendly_page.open_page()
